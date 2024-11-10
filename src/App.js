@@ -1,4 +1,5 @@
 import loadProducts from "./models/products.js";
+import InputView from "./views/inputView.js";
 import OutputView from "./views/outputView.js";
 
 class App {
@@ -7,6 +8,7 @@ class App {
 
     OutputView.startMessage();
     OutputView.productsList(products);
+    InputView.askForProductPurchase();
   }
 }
 
