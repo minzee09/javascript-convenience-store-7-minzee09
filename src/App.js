@@ -29,8 +29,7 @@ class App {
         }
         await this.applyMembershipDiscountIfEligible(); // 멤버십 할인 여부 확인 및 적용
         ReceiptController.displayReceipt(this.cart);
-        this.displayCartItems();
-        this.displayFinalCartSummary(); // 최종 결제 금액 출력
+        await this.promptAdditionalPurchase();
       } catch (error) {
         console.log(error.message);
         await this.getUserInput();
@@ -54,21 +53,24 @@ class App {
     const { product, quantity } = purchaseItem;
     if (!PromotionController.isPromotionAvailable(product, quantity)) return;
 
-    const applyPromotion = await this.promptPromotionDecision(product);
-    if (applyPromotion) {
-      this.applyPromotion(purchaseItem);
+    try {
+      const applyPromotion = await this.promptPromotionDecision(product);
+      if (applyPromotion) {
+        this.applyPromotion(purchaseItem);
+      }
+    } catch (error) {
+      console.log(error.message);
+      await this.applyPromotionIfEligible(purchaseItem);
     }
   }
 
   async promptPromotionDecision(product) {
     OutputView.promotionMessage(product.name, product.promotion.get);
-    try {
-      const answer = await InputView.readYesNo();
-      return answer === "y";
-    } catch (error) {
-      console.log(error.message);
-      return this.promptPromotionDecision(product); // 재귀 호출로 다시 입력 요청
+    const answer = await InputView.readYesNo();
+    if (answer !== "y" && answer !== "n") {
+      throw new Error("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
     }
+    return answer === "y";
   }
 
   applyPromotion(purchaseItem) {
@@ -90,9 +92,23 @@ class App {
     }
   }
 
+  async promptAdditionalPurchase() {
+    OutputView.askAdditionalPurchase();
+    const answer = await InputView.readYesNo();
+    if (answer === "y") {
+      this.cart = new Cart();
+      await this.run();
+    } else if (answer === "n") {
+      return;
+    } else {
+      console.log("[ERROR] 잘못된 입력입니다. Y 또는 N을 입력해 주세요.");
+      await this.promptAdditionalPurchase();
+    }
+  }
+
   displayFinalCartSummary() {
     const totalAmount = this.cart.calculateTotalAmount();
-    OutputView.displayTotalAmount(totalAmount); // 최종 금액 출력
+    OutputView.displayTotalAmount(totalAmount);
   }
 
   displayCartItems() {

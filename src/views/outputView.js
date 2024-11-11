@@ -51,7 +51,10 @@ const OutputView = {
     Console.print(`행사할인\t\t\t-${promotionDiscount}`);
     Console.print(`멤버십할인\t\t\t-${membershipDiscount}`);
     Console.print(`내실돈\t\t\t${finalAmount}`);
-    Console.print("감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
+  },
+
+  askAdditionalPurchase() {
+    Console.print("\n감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
   },
 };
 

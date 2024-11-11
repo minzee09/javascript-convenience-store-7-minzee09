@@ -10,11 +10,9 @@ class Cart {
   }
 
   calculateTotalAmount() {
-    return (
-      this.items.reduce((total, item) => {
-        return total + item.product.price * item.quantity;
-      }, 0) - this.discount
-    );
+    return this.items.reduce((total, item) => {
+      return total + item.product.price * item.quantity;
+    }, 0);
   }
 
   applyPromotionDiscount(discountAmount) {
