@@ -80,6 +80,7 @@ class App {
   }
 
   async applyMembershipDiscountIfEligible() {
+    OutputView.showMembershipMessage();
     try {
       const answer = await InputView.readYesNo();
       if (answer === "y") {
