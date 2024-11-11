@@ -83,9 +83,21 @@ class App {
   }
 
   applyPromotion(purchaseItem) {
-    const discountAmount = purchaseItem.product.price * purchaseItem.product.promotion.get;
-    this.cart.applyPromotionDiscount(discountAmount);
-    purchaseItem.quantity += purchaseItem.product.promotion.get;
+    const { product, quantity } = purchaseItem;
+    const promotion = product.promotion;
+
+    // 재고가 충분하지 않으면 프로모션 적용하지 않음
+    if (!promotion || product.stock < quantity + promotion.get) return;
+
+    // 프로모션 조건에 맞게 추가 개수를 계산
+    const freeQuantity = Math.floor(quantity / promotion.buy) * promotion.get;
+
+    // 재고가 충분할 경우에만 무료 수량을 추가
+    if (product.stock >= quantity + freeQuantity) {
+      this.cart.applyPromotionDiscount(product.price * freeQuantity);
+      purchaseItem.quantity += freeQuantity;
+      this.updateProductStock(product.name, freeQuantity); // 무료 수량에 대한 재고 차감
+    }
   }
 
   async applyMembershipDiscountIfEligible() {
