@@ -21,6 +21,7 @@ class Cart {
 
   applyMembershipDiscount(discountAmount) {
     this.membershipDiscount = discountAmount;
+    console.log(this.membershipDiscount);
   }
 
   getFinalAmount() {

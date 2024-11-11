@@ -4,7 +4,7 @@ class MembershipController {
     const maxDiscount = 8000;
     const totalAmount = cart.calculateTotalAmount();
     const discountAmount = Math.min(totalAmount * discountRate, maxDiscount);
-    cart.applyMembershipDiscount(discountAmount);
+    return discountAmount;
   }
 }
 
