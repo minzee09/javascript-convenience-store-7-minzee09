@@ -4,6 +4,7 @@ import Cart from "./models/Cart.js";
 import InputView from "./views/inputView.js";
 import InputController from "./controllers/InputController.js";
 import PromotionController from "./controllers/PromotionController.js";
+import MembershipController from "./controllers/MembershipController.js";
 
 class App {
   constructor() {
@@ -77,20 +78,12 @@ class App {
     try {
       const answer = await InputView.readYesNo();
       if (answer === "y") {
-        this.applyMembershipDiscount();
+        MembershipController.applyMembershipDiscount(this.cart);
       }
     } catch (error) {
       console.log(error.message);
-      await this.applyMembershipDiscountIfEligible(); // 잘못된 입력이 들어오면 재입력 요청
+      await this.applyMembershipDiscountIfEligible();
     }
-  }
-
-  applyMembershipDiscount() {
-    const discountRate = 0.3; // 30% 할인율
-    const maxDiscount = 8000; // 최대 8,000원 할인
-    const totalAmount = this.cart.calculateTotalAmount(); // 장바구니 총액 계산
-    const discountAmount = Math.min(totalAmount * discountRate, maxDiscount); // 할인 금액 계산
-    this.cart.applyDiscount(discountAmount); // 장바구니에 할인 적용
   }
 
   displayFinalCartSummary() {
