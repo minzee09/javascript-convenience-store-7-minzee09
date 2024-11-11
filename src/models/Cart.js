@@ -1,7 +1,8 @@
 class Cart {
   constructor() {
     this.items = [];
-    this.discount = 0;
+    this.promotionDiscount = 0;
+    this.membershipDiscount = 0;
   }
 
   addItem(item) {
@@ -16,8 +17,17 @@ class Cart {
     );
   }
 
-  applyDiscount(discountAmount) {
-    this.discount = discountAmount;
+  applyPromotionDiscount(discountAmount) {
+    this.promotionDiscount += discountAmount;
+  }
+
+  applyMembershipDiscount(discountAmount) {
+    this.membershipDiscount = discountAmount;
+  }
+
+  getFinalAmount() {
+    const totalAmount = this.calculateTotalAmount();
+    return totalAmount - this.promotionDiscount - this.membershipDiscount;
   }
 
   getItems() {

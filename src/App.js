@@ -5,6 +5,7 @@ import InputView from "./views/inputView.js";
 import InputController from "./controllers/InputController.js";
 import PromotionController from "./controllers/PromotionController.js";
 import MembershipController from "./controllers/MembershipController.js";
+import ReceiptController from "./controllers/ReceiptController.js";
 
 class App {
   constructor() {
@@ -27,6 +28,7 @@ class App {
           this.cart.addItem(item);
         }
         await this.applyMembershipDiscountIfEligible(); // 멤버십 할인 여부 확인 및 적용
+        ReceiptController.displayReceipt(this.cart);
         this.displayCartItems();
         this.displayFinalCartSummary(); // 최종 결제 금액 출력
       } catch (error) {
@@ -70,15 +72,17 @@ class App {
   }
 
   applyPromotion(purchaseItem) {
+    const discountAmount = purchaseItem.product.price * purchaseItem.product.promotion.get;
+    this.cart.applyPromotionDiscount(discountAmount);
     purchaseItem.quantity += purchaseItem.product.promotion.get;
   }
 
   async applyMembershipDiscountIfEligible() {
-    OutputView.showMembershipMessage();
     try {
       const answer = await InputView.readYesNo();
       if (answer === "y") {
-        MembershipController.applyMembershipDiscount(this.cart);
+        const discountAmount = MembershipController.applyMembershipDiscount(this.cart);
+        this.cart.applyMembershipDiscount(discountAmount);
       }
     } catch (error) {
       console.log(error.message);

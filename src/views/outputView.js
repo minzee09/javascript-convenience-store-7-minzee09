@@ -29,6 +29,30 @@ const OutputView = {
   displayTotalAmount(amount) {
     Console.print(`최종 결제 금액: ${amount}원`);
   },
+
+  displayReceipt(items, totalAmount, promotionDiscount, membershipDiscount, finalAmount) {
+    Console.print("==============W 편의점================");
+    Console.print("상품명\t\t수량\t금액");
+
+    items.forEach((item) => {
+      Console.print(
+        `${item.product.name}\t\t${item.quantity}\t${item.product.price * item.quantity}`,
+      );
+    });
+
+    Console.print("=============증\t정===============");
+    items.forEach((item) => {
+      if (item.product.promotion) {
+        Console.print(`${item.product.name}\t\t${item.product.promotion.get}`);
+      }
+    });
+    Console.print("====================================");
+    Console.print(`총구매액\t\t${items.length}\t${totalAmount}`);
+    Console.print(`행사할인\t\t\t-${promotionDiscount}`);
+    Console.print(`멤버십할인\t\t\t-${membershipDiscount}`);
+    Console.print(`내실돈\t\t\t${finalAmount}`);
+    Console.print("감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
+  },
 };
 
 export default OutputView;
