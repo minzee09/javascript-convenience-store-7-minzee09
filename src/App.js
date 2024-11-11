@@ -10,7 +10,9 @@ import ReceiptController from "./controllers/ReceiptController.js";
 class App {
   constructor() {
     this.cart = new Cart();
-    this.products = loadProducts();
+    const { products, updateProductStock } = loadProducts();
+    this.products = products;
+    this.updateProductStock = updateProductStock;
   }
 
   async run() {
@@ -22,12 +24,13 @@ class App {
   async getUserInput() {
     InputView.readItem(async (input) => {
       try {
-        const purchaseItems = this.createPurchaseItems(input); // 여러 상품을 처리
+        const purchaseItems = this.createPurchaseItems(input);
         for (const item of purchaseItems) {
           await this.applyPromotionIfEligible(item);
           this.cart.addItem(item);
+          this.updateProductStock(item.product.name, item.quantity);
         }
-        await this.applyMembershipDiscountIfEligible(); // 멤버십 할인 여부 확인 및 적용
+        await this.applyMembershipDiscountIfEligible();
         ReceiptController.displayReceipt(this.cart);
         await this.promptAdditionalPurchase();
       } catch (error) {

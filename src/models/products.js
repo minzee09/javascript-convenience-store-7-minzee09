@@ -4,21 +4,31 @@ function loadProducts() {
   const productsData = loadFile("public/products.md");
   const promotionsData = loadFile("public/promotions.md");
   const promotions = parsePromotions(promotionsData);
+  const products = parseProductData(productsData, promotions);
 
-  return parseProductData(productsData, promotions);
+  return {
+    products,
+    updateProductStock: (productName, quantity) => {
+      const product = products.find((p) => p.name === productName);
+      if (product) {
+        product.stock -= quantity;
+        if (product.stock < 0) product.stock = 0;
+      }
+    },
+  };
 }
 
 function parseProductData(data, promotions) {
   const lines = data.split("\n");
   return lines.slice(1).map((line) => {
     const [name, price, stock, promotionName] = line.split(",");
-    const promotion = promotions[promotionName.trim()] || null; // 프로모션 객체를 올바르게 할당
+    const promotion = promotions[promotionName.trim()] || null;
 
     return {
       name: name.trim(),
       price: parseInt(price.trim(), 10),
       stock: parseInt(stock.trim(), 10),
-      promotion, // 프로모션 객체 전체를 할당
+      promotion,
     };
   });
 }
