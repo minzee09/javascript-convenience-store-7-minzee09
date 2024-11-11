@@ -20,9 +20,11 @@ class App {
   async getUserInput() {
     InputView.readItem(async (input) => {
       try {
-        const purchaseItem = this.createPurchaseItem(input);
-        await this.applyPromotionIfEligible(purchaseItem); // 프로모션 적용 여부 확인 및 처리
-        this.cart.addItem(purchaseItem);
+        const purchaseItems = this.createPurchaseItems(input); // 여러 상품을 처리
+        for (const item of purchaseItems) {
+          await this.applyPromotionIfEligible(item);
+          this.cart.addItem(item);
+        }
         this.displayCartItems();
       } catch (error) {
         console.log(error.message);
@@ -31,16 +33,16 @@ class App {
     });
   }
 
-  createPurchaseItem(input) {
-    const purchaseItem = InputController.parseInput(input);
-    const product = this.findProduct(purchaseItem.name);
-
-    if (!product) {
-      throw new Error("[ERROR] 존재하지 않는 상품입니다.");
-    }
-
-    purchaseItem.product = product;
-    return purchaseItem;
+  createPurchaseItems(input) {
+    const purchaseItems = InputController.parseInput(input);
+    purchaseItems.forEach((item) => {
+      const product = this.findProduct(item.name);
+      if (!product) {
+        throw new Error(`[ERROR] 존재하지 않는 상품입니다: ${item.name}`);
+      }
+      item.product = product;
+    });
+    return purchaseItems;
   }
 
   async applyPromotionIfEligible(purchaseItem) {

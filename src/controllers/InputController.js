@@ -1,11 +1,17 @@
 const InputController = {
   parseInput(input) {
-    const match = input.match(/\[(.+)-(\d+)\]/);
-    if (!match) {
-      throw new Error("[ERROR] 올바르지 않은 형식으로 입력했습니다."); // 에러 던지기
+    const items = input.match(/\[([^\]]+)\]/g);
+    if (!items) {
+      throw new Error("[ERROR] 잘못된 입력 형식입니다. 다시 입력해 주세요.");
     }
-    const [, name, quantity] = match;
-    return { name, quantity: parseInt(quantity, 10) };
+
+    return items.map((item) => {
+      const [name, quantity] = item.slice(1, -1).split("-");
+      return {
+        name: name.trim(),
+        quantity: parseInt(quantity.trim(), 10),
+      };
+    });
   },
 };
 
