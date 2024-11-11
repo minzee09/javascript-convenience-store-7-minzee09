@@ -86,17 +86,27 @@ class App {
     const { product, quantity } = purchaseItem;
     const promotion = product.promotion;
 
-    // 재고가 충분하지 않으면 프로모션 적용하지 않음
-    if (!promotion || product.stock < quantity + promotion.get) return;
+    if (!this.isPromotionApplicable(product, quantity, promotion)) return;
 
-    // 프로모션 조건에 맞게 추가 개수를 계산
-    const freeQuantity = Math.floor(quantity / promotion.buy) * promotion.get;
+    const freeQuantity = this.calculateFreeQuantity(quantity, promotion);
+    this.applyPromotionDiscountAndStock(purchaseItem, freeQuantity);
+  }
 
-    // 재고가 충분할 경우에만 무료 수량을 추가
-    if (product.stock >= quantity + freeQuantity) {
+  isPromotionApplicable(product, quantity, promotion) {
+    return promotion && product.stock >= quantity + promotion.get;
+  }
+
+  calculateFreeQuantity(quantity, promotion) {
+    return Math.floor(quantity / promotion.buy) * promotion.get;
+  }
+
+  applyPromotionDiscountAndStock(purchaseItem, freeQuantity) {
+    const { product } = purchaseItem;
+
+    if (product.stock >= purchaseItem.quantity + freeQuantity) {
       this.cart.applyPromotionDiscount(product.price * freeQuantity);
       purchaseItem.quantity += freeQuantity;
-      this.updateProductStock(product.name, freeQuantity); // 무료 수량에 대한 재고 차감
+      this.updateProductStock(product.name, freeQuantity);
     }
   }
 
