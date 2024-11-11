@@ -21,6 +21,14 @@ const OutputView = {
       `\n현재 ${productName}은(는) ${freeQuantity}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까?`,
     );
   },
+
+  showMembershipMessage() {
+    Console.print("\n멤버십 할인을 받으시겠습니까?");
+  },
+
+  displayTotalAmount(amount) {
+    Console.print(`최종 결제 금액: ${amount}원`);
+  },
 };
 
 export default OutputView;

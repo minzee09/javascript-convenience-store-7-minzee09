@@ -25,7 +25,9 @@ class App {
           await this.applyPromotionIfEligible(item);
           this.cart.addItem(item);
         }
+        await this.applyMembershipDiscountIfEligible(); // 멤버십 할인 여부 확인 및 적용
         this.displayCartItems();
+        this.displayFinalCartSummary(); // 최종 결제 금액 출력
       } catch (error) {
         console.log(error.message);
         await this.getUserInput();
@@ -68,6 +70,32 @@ class App {
 
   applyPromotion(purchaseItem) {
     purchaseItem.quantity += purchaseItem.product.promotion.get;
+  }
+
+  async applyMembershipDiscountIfEligible() {
+    OutputView.showMembershipMessage();
+    try {
+      const answer = await InputView.readYesNo();
+      if (answer === "y") {
+        this.applyMembershipDiscount();
+      }
+    } catch (error) {
+      console.log(error.message);
+      await this.applyMembershipDiscountIfEligible(); // 잘못된 입력이 들어오면 재입력 요청
+    }
+  }
+
+  applyMembershipDiscount() {
+    const discountRate = 0.3; // 30% 할인율
+    const maxDiscount = 8000; // 최대 8,000원 할인
+    const totalAmount = this.cart.calculateTotalAmount(); // 장바구니 총액 계산
+    const discountAmount = Math.min(totalAmount * discountRate, maxDiscount); // 할인 금액 계산
+    this.cart.applyDiscount(discountAmount); // 장바구니에 할인 적용
+  }
+
+  displayFinalCartSummary() {
+    const totalAmount = this.cart.calculateTotalAmount();
+    OutputView.displayTotalAmount(totalAmount); // 최종 금액 출력
   }
 
   displayCartItems() {
