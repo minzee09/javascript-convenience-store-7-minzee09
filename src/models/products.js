@@ -4,6 +4,7 @@ function loadProducts() {
   const productsData = loadFile("public/products.md");
   const promotionsData = loadFile("public/promotions.md");
   const promotions = parsePromotions(promotionsData);
+
   const products = parseProductData(productsData, promotions);
 
   return {
@@ -12,8 +13,12 @@ function loadProducts() {
       const product = products.find((p) => p.name === productName);
       if (product) {
         product.stock -= quantity;
-        if (product.stock < 0) product.stock = 0;
+        if (product.stock < 0) product.stock = 0; // 재고가 0 이하가 되지 않도록 설정
       }
+    },
+    hasSufficientStock: (productName, quantity) => {
+      const product = products.find((p) => p.name === productName);
+      return product && product.stock >= quantity;
     },
   };
 }

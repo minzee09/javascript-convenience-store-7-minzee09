@@ -12,7 +12,7 @@ const OutputView = {
       const stockText = stock > 0 ? `${stock}개` : "재고 없음";
       const promotionText = promotion ? promotion.name || promotion : ""; // promotion이 객체라면 이름 출력
 
-      console.log(`- ${name} ${price}원 ${stockText} ${promotionText}`);
+      Console.print(`- ${name} ${price}원 ${stockText} ${promotionText}`);
     });
   },
 

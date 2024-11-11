@@ -9,10 +9,11 @@ import ReceiptController from "./controllers/ReceiptController.js";
 
 class App {
   constructor() {
-    this.cart = new Cart();
-    const { products, updateProductStock } = loadProducts();
+    const { products, updateProductStock, hasSufficientStock } = loadProducts();
     this.products = products;
     this.updateProductStock = updateProductStock;
+    this.hasSufficientStock = hasSufficientStock;
+    this.cart = new Cart();
   }
 
   async run() {
@@ -26,6 +27,11 @@ class App {
       try {
         const purchaseItems = this.createPurchaseItems(input);
         for (const item of purchaseItems) {
+          if (!this.hasSufficientStock(item.product.name, item.quantity)) {
+            throw new Error(
+              `[ERROR] ${item.product.name}의 재고가 부족합니다. 현재 재고: ${item.product.stock}`,
+            );
+          }
           await this.applyPromotionIfEligible(item);
           this.cart.addItem(item);
           this.updateProductStock(item.product.name, item.quantity);
@@ -108,15 +114,6 @@ class App {
       console.log("[ERROR] 잘못된 입력입니다. Y 또는 N을 입력해 주세요.");
       await this.promptAdditionalPurchase();
     }
-  }
-
-  displayFinalCartSummary() {
-    const totalAmount = this.cart.calculateTotalAmount();
-    OutputView.displayTotalAmount(totalAmount);
-  }
-
-  displayCartItems() {
-    console.log("현재 장바구니:", this.cart.getItems());
   }
 
   findProduct(name) {
