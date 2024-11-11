@@ -7,7 +7,7 @@ function loadProducts() {
 
 function parseProductData(data) {
   const lines = splitLines(data); // 줄 별로 묶어서 배열 반환
-  return lines.slice(0).map(parseLineToProduct); // 첫째줄 제외
+  return lines.slice(1).map(parseLineToProduct); // 첫째줄 제외
 }
 
 function splitLines(data) {
